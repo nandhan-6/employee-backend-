@@ -7,7 +7,7 @@ app.use(express.json());
 
 // Temporary array as database
 let employees = [
-  { id:3,name: "Guru", role: "HR" }
+  { id:1,name: "Guru", role: "HR" }
 ];
 let id = 1;
 
