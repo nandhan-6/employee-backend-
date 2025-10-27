@@ -1,51 +1,54 @@
-const express = require('express');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: '*' }));
+app.use(cors());
 app.use(express.json());
 
-// In-memory data (acts like a temporary DB)
-let employees = [
-  { id: 1, name: "John", age: 25, department: "HR" },
-  { id: 2, name: "Alice", age: 28, department: "IT" }
-];
+// Temporary array as database
+let employees = [];
+let id = 1;
 
-// CREATE
-app.post('/employees', (req, res) => {
-  const newEmp = { id: employees.length + 1, ...req.body };
-  employees.push(newEmp);
-  res.json(newEmp);
+// ➕ Add employee
+app.post("/employees", (req, res) => {
+  const { name, role } = req.body;
+  const newEmployee = { id: id++, name, role };
+  employees.push(newEmployee);
+  res.json({ message: "Employee added successfully", employee: newEmployee });
 });
 
-// READ ALL
-app.get('/employees', (req, res) => {
+// 📋 Get all employees
+app.get("/employees", (req, res) => {
   res.json(employees);
 });
 
-// READ ONE
-app.get('/employees/:id', (req, res) => {
-  const emp = employees.find(e => e.id == req.params.id);
-  emp ? res.json(emp) : res.status(404).json({ message: "Not found" });
-});
+// ✏️ Update employee
+app.put("/employees/:id", (req, res) => {
+  const empId = parseInt(req.params.id);
+  const { name, role } = req.body;
+  const emp = employees.find((e) => e.id === empId);
 
-// UPDATE
-app.put('/employees/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = employees.findIndex(e => e.id === id);
-  if (index !== -1) {
-    employees[index] = { id, ...req.body };
-    res.json(employees[index]);
+  if (emp) {
+    emp.name = name;
+    emp.role = role;
+    res.json({ message: "Employee updated successfully", employee: emp });
   } else {
     res.status(404).json({ message: "Employee not found" });
   }
 });
 
-// DELETE
-app.delete('/employees/:id', (req, res) => {
-  employees = employees.filter(e => e.id != req.params.id);
-  res.json({ message: "Deleted successfully" });
+// 🗑️ Delete employee
+app.delete("/employees/:id", (req, res) => {
+  const empId = parseInt(req.params.id);
+  const index = employees.findIndex((e) => e.id === empId);
+
+  if (index !== -1) {
+    employees.splice(index, 1);
+    res.json({ message: "Employee deleted successfully" });
+  } else {
+    res.status(404).json({ message: "Employee not found" });
+  }
 });
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+const PORT = 5000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
