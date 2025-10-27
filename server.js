@@ -6,7 +6,9 @@ app.use(cors());
 app.use(express.json());
 
 // Temporary array as database
-let employees = [];
+let employees = [
+  { name: "Guru", role: "HR" }
+];
 let id = 1;
 
 // ➕ Add employee
